@@ -1,22 +1,35 @@
 import React from 'react';
-import AuthTest from './components/AuthTest';
-import './App.css';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import AuthPage from './pages/AuthPage';
+import Dashboard from './pages/Dashboard';
+import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
   return (
-    <div className="min-h-screen bg-gray-100">
-      <header className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 py-6">
-          <h1 className="text-3xl font-bold text-gray-900">
-            Traffic Dashboard - Authentication Test
-          </h1>
-        </div>
-      </header>
-      
-      <main className="max-w-7xl mx-auto px-4 py-6">
-        <AuthTest />
-      </main>
-    </div>
+    <Router>
+      <div className="App">
+        <Routes>
+          {/* Route par défaut - redirection vers dashboard */}
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          
+          {/* Page d'authentification */}
+          <Route path="/auth" element={<AuthPage />} />
+          
+          {/* Dashboard protégé */}
+          <Route 
+            path="/dashboard" 
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            } 
+          />
+          
+          {/* Route catch-all pour les pages non trouvées */}
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 
