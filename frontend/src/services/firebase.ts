@@ -1,6 +1,5 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth, connectAuthEmulator } from 'firebase/auth';
-import { getFirestore, connectFirestoreEmulator } from 'firebase/firestore';
 import { getFunctions, connectFunctionsEmulator } from 'firebase/functions';
 
 const firebaseConfig = {
@@ -29,14 +28,13 @@ if (missingVars.length > 0) {
 
 const app = initializeApp(firebaseConfig);
 
+// Frontend only has access to Auth and Functions (NO DIRECT FIRESTORE ACCESS)
 export const auth = getAuth(app);
-export const db = getFirestore(app);
 export const functions = getFunctions(app);
 
-// Emulator connection state
+// Emulator connection state (removed Firestore)
 let emulatorConnectionState = {
   auth: false,
-  firestore: false,
   functions: false,
 };
 
@@ -44,29 +42,19 @@ let emulatorConnectionState = {
 if (import.meta.env.DEV) {
   try {
     if (!emulatorConnectionState.auth) {
-      connectAuthEmulator(auth, 'http://localhost:9099', { disableWarnings: true });
+      connectAuthEmulator(auth, 'http://localhost:9199', { disableWarnings: true });
       emulatorConnectionState.auth = true;
-      console.log('🔐 Auth Emulator connected');
+      console.log('🔐 Auth Emulator connected on port 9199');
     }
   } catch (error) {
     console.warn('⚠️ Auth Emulator connection failed:', error);
   }
 
   try {
-    if (!emulatorConnectionState.firestore) {
-      connectFirestoreEmulator(db, 'localhost', 8080);
-      emulatorConnectionState.firestore = true;
-      console.log('📊 Firestore Emulator connected');
-    }
-  } catch (error) {
-    console.warn('⚠️ Firestore Emulator connection failed:', error);
-  }
-
-  try {
     if (!emulatorConnectionState.functions) {
-      connectFunctionsEmulator(functions, 'localhost', 5001);
+      connectFunctionsEmulator(functions, 'localhost', 5101);
       emulatorConnectionState.functions = true;
-      console.log('⚡ Functions Emulator connected');
+      console.log('⚡ Functions Emulator connected on port 5101');
     }
   } catch (error) {
     console.warn('⚠️ Functions Emulator connection failed:', error);

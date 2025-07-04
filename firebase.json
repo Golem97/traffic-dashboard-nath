@@ -4,7 +4,12 @@
       "indexes": "firestore.indexes.json"
     },
     "functions": {
-      "source": "functions"
+      "source": "functions",
+      "runtime": "nodejs22",
+      "predeploy": [
+        "npm --prefix \"$RESOURCE_DIR\" run lint",
+        "npm --prefix \"$RESOURCE_DIR\" run build"
+      ]
     },
     "hosting": {
       "public": "frontend/dist",
@@ -34,7 +39,33 @@
           "headers": [
             {
               "key": "Cache-Control",
-              "value": "max-age=604800"
+              "value": "max-age=31536000"
+            }
+          ]
+        },
+        {
+          "source": "**/*.@(html|json)",
+          "headers": [
+            {
+              "key": "Cache-Control",
+              "value": "max-age=0"
+            }
+          ]
+        },
+        {
+          "source": "**",
+          "headers": [
+            {
+              "key": "X-Content-Type-Options",
+              "value": "nosniff"
+            },
+            {
+              "key": "X-Frame-Options",
+              "value": "DENY"
+            },
+            {
+              "key": "X-XSS-Protection",
+              "value": "1; mode=block"
             }
           ]
         }
@@ -43,24 +74,24 @@
     "emulators": {
       "auth": {
         "host": "localhost",
-        "port": 9099
+        "port": 9199
       },
       "functions": {
         "host": "localhost",
-        "port": 5001
+        "port": 5101
       },
       "firestore": {
         "host": "localhost",
-        "port": 8080
+        "port": 8180
       },
       "hosting": {
         "host": "localhost",
-        "port": 5002
+        "port": 5102
       },
       "ui": {
         "enabled": true,
         "host": "localhost",
-        "port": 4000
+        "port": 4100
       },
       "singleProjectMode": true
     }
