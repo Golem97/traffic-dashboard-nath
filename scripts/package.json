@@ -1,0 +1,14 @@
+{
+  "name": "traffic-dashboard-scripts",
+  "version": "1.0.0",
+  "description": "Development scripts for Traffic Dashboard",
+  "private": true,
+  "scripts": {
+    "import": "node import-data.js",
+    "test": "node test-endpoints.js"
+  },
+  "dependencies": {
+    "firebase-admin": "^12.0.0",
+    "node-fetch": "^2.7.0"
+  }
+} 

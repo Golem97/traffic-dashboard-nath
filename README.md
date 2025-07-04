@@ -174,6 +174,20 @@ firebase emulators:start --only functions,firestore,auth  # Start specific emula
 firebase deploy                      # Deploy entire project
 ```
 
+## Development Scripts
+
+The `scripts/` directory contains helpful development utilities:
+
+```bash
+# Import sample data (61 traffic entries)
+cd scripts && node import-data.js
+
+# Test all HTTP endpoints  
+cd scripts && node test-endpoints.js
+```
+
+See [scripts/README.md](scripts/README.md) for detailed documentation.
+
 ## Environment Variables
 
 Create `frontend/.env` with your Firebase configuration:
