@@ -1,115 +1,59 @@
 # Traffic Dashboard Frontend
 
-Application React TypeScript avec Tailwind CSS et Shadcn/UI - Base technique configurée.
+React TypeScript application with Tailwind CSS and Shadcn/UI - Technical foundation configured.
 
-## Stack Technique
+## Tech Stack
 
 - ✅ React 18 + TypeScript
-- ✅ Vite pour le build et dev server
-- ✅ Tailwind CSS pour les styles
-- ✅ Shadcn/UI pour les composants
-- ✅ Configuration TypeScript avec alias `@/*`
-- ✅ Support mode sombre/clair
+- ✅ Vite for build and dev server
+- ✅ Tailwind CSS for styling
+- ✅ Shadcn/UI for components
+- ✅ TypeScript configuration with `@/*` aliases
+- ✅ Dark/light mode support
 
-## Démarrage
+## Getting Started
 
 ```bash
-# Installation des dépendances
+# Install dependencies
 npm install
 
-# Lancement du serveur de développement
+# Start development server
 npm run dev
 
-# Build pour production
+# Build for production
 npm run build
 ```
 
-## Développement
+## Development
 
-Le projet est prêt pour le développement step by step. 
+The project is ready for step-by-step development.
 
-Structure de base :
+Base structure:
 ```
 src/
-├── components/ui/    # Composants Shadcn/UI
-├── App.tsx          # Composant principal
-├── main.tsx         # Point d'entrée
-└── index.css        # Styles Tailwind
+├── components/ui/    # Shadcn/UI components
+├── services/         # API and Firebase services
+├── types/           # TypeScript type definitions
+├── constants/       # Application constants
+├── hooks/           # Custom React hooks
+├── App.tsx          # Main component
+├── main.tsx         # Entry point
+└── index.css        # Tailwind styles
 ```
 
-## Prochaines étapes
+## Architecture
 
-1. Créer les types TypeScript
-2. Configurer Firebase
-3. Développer les composants
-4. Implémenter les fonctionnalités
+The frontend follows a strict HTTP REST API architecture:
+- **No direct Firestore access** - All data goes through HTTP endpoints
+- **JWT Authentication** - Secure token-based auth
+- **Type-safe API calls** - Full TypeScript coverage
+- **Component-based UI** - Modular React components
 
-# React + TypeScript + Vite
+## Key Features
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- HTTP REST API integration
+- Firebase Authentication
+- Responsive design with Tailwind CSS
+- Modern UI components with Shadcn/UI
+- TypeScript for type safety
+- Development with Firebase emulators
