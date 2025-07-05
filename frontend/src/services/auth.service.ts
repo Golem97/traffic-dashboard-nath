@@ -4,9 +4,10 @@ import {
   signOut,
   sendPasswordResetEmail,
   updateProfile,
+  signInWithPopup,
   type User
 } from 'firebase/auth';
-import { auth } from './firebase';
+import { auth, googleProvider } from './firebase';
 import type { LoginCredentials, RegisterCredentials, AuthUser } from '../types/auth';
 
 /**
@@ -26,6 +27,21 @@ export class AuthService {
         credentials.password
       );
       
+      const user = userCredential.user;
+      const token = await user.getIdToken();
+      
+      return this.mapFirebaseUser(user, token);
+    } catch (error) {
+      this.handleAuthError(error);
+    }
+  }
+
+  /**
+   * User login with Google
+   */
+  static async loginWithGoogle(): Promise<AuthUser> {
+    try {
+      const userCredential = await signInWithPopup(auth, googleProvider);
       const user = userCredential.user;
       const token = await user.getIdToken();
       
@@ -180,6 +196,14 @@ export class AuthService {
           throw new Error('Too many attempts. Please try again later');
         case 'auth/network-request-failed':
           throw new Error('Network error. Check your connection');
+        case 'auth/popup-closed-by-user':
+          throw new Error('Sign-in popup was closed before completion');
+        case 'auth/popup-blocked':
+          throw new Error('Sign-in popup was blocked by browser');
+        case 'auth/cancelled-popup-request':
+          throw new Error('Sign-in popup request was cancelled');
+        case 'auth/account-exists-with-different-credential':
+          throw new Error('Account already exists with different sign-in method');
         default:
           throw new Error(firebaseError.message || 'Authentication error');
       }

@@ -76,6 +76,30 @@ export const useAuth = () => {
   };
 
   /**
+   * User login with Google
+   */
+  const loginWithGoogle = async (): Promise<void> => {
+    setState(prev => ({ ...prev, loading: true, error: null }));
+    
+    try {
+      const user = await AuthService.loginWithGoogle();
+      setState({
+        user,
+        loading: false,
+        error: null,
+        isAuthenticated: true,
+      });
+    } catch (error) {
+      setState(prev => ({
+        ...prev,
+        loading: false,
+        error: error instanceof Error ? error.message : 'Google login error',
+      }));
+      throw error;
+    }
+  };
+
+  /**
    * User registration
    */
   const register = async (credentials: RegisterCredentials): Promise<void> => {
@@ -198,6 +222,7 @@ export const useAuth = () => {
     
     // Actions
     login,
+    loginWithGoogle,
     register,
     logout,
     resetPassword,

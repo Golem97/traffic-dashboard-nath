@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Eye, EyeOff, Mail, Lock, User, ArrowRight, Github, Chrome, Sun, Moon } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, User, ArrowRight, Chrome, Sun, Moon } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { useTheme } from '../hooks/useTheme';
 import { Navigate } from 'react-router-dom';
@@ -36,7 +36,7 @@ const AuthPage: React.FC = () => {
     confirmPassword: ''
   });
 
-  const { login, register, isAuthenticated } = useAuth();
+  const { login, register, loginWithGoogle, isAuthenticated } = useAuth();
   const { isDarkMode, toggleTheme, themeClasses } = useTheme();
 
   // Redirect if already authenticated
@@ -53,6 +53,19 @@ const AuthPage: React.FC = () => {
       await login(loginForm);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Login error');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    setError(null);
+    setIsLoading(true);
+    
+    try {
+      await loginWithGoogle();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Google login error');
     } finally {
       setIsLoading(false);
     }
@@ -358,32 +371,24 @@ const AuthPage: React.FC = () => {
               <p className={`${themeClasses.footerText} text-sm mb-4`}>
                 Or continue with
               </p>
-              <div className="flex space-x-3">
-                <button className={`flex-1 ${themeClasses.socialButton} py-2 px-4 rounded-lg font-medium transition-all duration-200 flex items-center justify-center space-x-2`}>
-                  <Chrome className="w-5 h-5" />
-                  <span>Google</span>
-                </button>
-                <button className={`flex-1 ${themeClasses.socialButton} py-2 px-4 rounded-lg font-medium transition-all duration-200 flex items-center justify-center space-x-2`}>
-                  <Github className="w-5 h-5" />
-                  <span>GitHub</span>
-                </button>
-              </div>
+              <motion.button 
+                onClick={handleGoogleLogin}
+                disabled={isLoading}
+                className={`w-full ${themeClasses.socialButton} py-2 px-4 rounded-lg font-medium transition-all duration-200 flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed`}
+                whileHover={{ scale: isLoading ? 1 : 1.02 }}
+                whileTap={{ scale: isLoading ? 1 : 0.98 }}
+              >
+                {isLoading ? (
+                  <div className="w-5 h-5 border-2 border-gray-400/30 border-t-gray-400 rounded-full animate-spin"></div>
+                ) : (
+                  <>
+                    <Chrome className="w-5 h-5" />
+                    <span>Google</span>
+                  </>
+                )}
+              </motion.button>
             </div>
           </div>
-        </div>
-
-        {/* Additional Info */}
-        <div className="mt-6 text-center">
-          <p className={`${themeClasses.footerText} text-sm`}>
-            By signing in, you agree to our{' '}
-            <a href="#" className={`${themeClasses.link} transition-colors underline`}>
-              Terms of Service
-            </a>{' '}
-            and{' '}
-            <a href="#" className={`${themeClasses.link} transition-colors underline`}>
-              Privacy Policy
-            </a>
-          </p>
         </div>
       </motion.div>
     </div>

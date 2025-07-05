@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth, connectAuthEmulator } from 'firebase/auth';
+import { getAuth, connectAuthEmulator, GoogleAuthProvider } from 'firebase/auth';
 import { getFunctions, connectFunctionsEmulator } from 'firebase/functions';
 
 const firebaseConfig = {
@@ -31,6 +31,11 @@ const app = initializeApp(firebaseConfig);
 // Frontend only has access to Auth and Functions (NO DIRECT FIRESTORE ACCESS)
 export const auth = getAuth(app);
 export const functions = getFunctions(app);
+
+// Google Auth Provider
+export const googleProvider = new GoogleAuthProvider();
+googleProvider.addScope('email');
+googleProvider.addScope('profile');
 
 // Emulator connection state (removed Firestore)
 let emulatorConnectionState = {
