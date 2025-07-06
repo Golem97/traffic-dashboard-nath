@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Eye, EyeOff, Mail, Lock, User, ArrowRight, Chrome, BarChart3 } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, User, ArrowRight, Chrome } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { useTheme } from '../hooks/useTheme';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 interface LoginForm {
   email: string;
@@ -36,7 +36,7 @@ const AuthPage: React.FC = () => {
     confirmPassword: ''
   });
 
-  const { login, register, loginWithGoogle, isAuthenticated, user } = useAuth();
+  const { login, register, loginWithGoogle, user } = useAuth();
   const { themeClasses } = useTheme();
   const navigate = useNavigate();
 

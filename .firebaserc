@@ -1,5 +1,8 @@
 {
   "projects": {
-    "default": "traffic-dashboard-nath"
-  }
+    "default": "traffic-dashboard-nath",
+    "prod": "traffic-dashboard-nath"
+  },
+  "targets": {},
+  "etags": {}
 }

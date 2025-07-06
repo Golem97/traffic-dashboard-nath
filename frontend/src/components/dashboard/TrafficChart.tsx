@@ -1,21 +1,16 @@
 import React, { useMemo } from 'react';
-import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
 import { useTheme } from '../../hooks/useTheme';
 import type { TrafficData } from '../../types/traffic';
-import { format, parseISO, startOfWeek, startOfMonth, eachWeekOfInterval, eachMonthOfInterval } from 'date-fns';
+import { format, parseISO, startOfWeek, startOfMonth } from 'date-fns';
+import type { ChartView } from './ChartControls';
 
 interface TrafficChartProps {
   data: TrafficData[];
   loading: boolean;
   chartType: 'line' | 'bar';
-  chartView: 'daily' | 'weekly' | 'monthly';
+  chartView: ChartView;
 }
-
-type AggregatedData = {
-  date: string;
-  visits: number;
-  period: string;
-};
 
 const TrafficChart: React.FC<TrafficChartProps> = ({ data, loading, chartType, chartView }) => {
   const { themeClasses } = useTheme();

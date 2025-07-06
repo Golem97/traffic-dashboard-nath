@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
 import { LogOut, BarChart3, Menu, X } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
-import { useTheme } from '../../hooks/useTheme';
 import { resetData } from '../../services/dataReset';
 
 const DashboardHeader: React.FC = () => {
   const { user, logout } = useAuth();
-  const { themeClasses } = useTheme();
   const [isResetting, setIsResetting] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 

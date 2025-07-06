@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Edit2, Trash2, Plus, ChevronUp, ChevronDown, Calendar, X, Filter } from 'lucide-react';
+import { Edit2, Trash2, Plus, ChevronUp, ChevronDown, Calendar, X, Filter, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
 import { useTheme } from '../../hooks/useTheme';
 import type { TrafficData } from '../../types/traffic';
 
@@ -38,7 +38,7 @@ const DataTable: React.FC<DataTableProps> = ({
   const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
   const [currentPage, setCurrentPage] = useState(1);
   const [showDateFilter, setShowDateFilter] = useState(false);
-  const itemsPerPage = 10;
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
@@ -67,6 +67,11 @@ const DataTable: React.FC<DataTableProps> = ({
 
   const toggleDateFilter = () => {
     setShowDateFilter(!showDateFilter);
+  };
+
+  const handleItemsPerPageChange = (newItemsPerPage: number) => {
+    setItemsPerPage(newItemsPerPage);
+    setCurrentPage(1);
   };
 
   const sortedData = [...data].sort((a, b) => {
@@ -99,6 +104,36 @@ const DataTable: React.FC<DataTableProps> = ({
       <ChevronDown className="w-4 h-4 text-black" />;
   };
 
+  // Generate page numbers to display
+  const getPageNumbers = () => {
+    const pages = [];
+    const maxVisiblePages = 5;
+    
+    if (totalPages <= maxVisiblePages) {
+      // Show all pages if total is small
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      // Show pages around current page
+      let start = Math.max(1, currentPage - 2);
+      let end = Math.min(totalPages, currentPage + 2);
+      
+      // Adjust if we're near the start or end
+      if (currentPage <= 3) {
+        end = Math.min(totalPages, 5);
+      } else if (currentPage >= totalPages - 2) {
+        start = Math.max(1, totalPages - 4);
+      }
+      
+      for (let i = start; i <= end; i++) {
+        pages.push(i);
+      }
+    }
+    
+    return pages;
+  };
+
   const isFiltering = dateFrom || dateTo;
 
   if (loading) {
@@ -113,8 +148,27 @@ const DataTable: React.FC<DataTableProps> = ({
 
   return (
     <div className={`${themeClasses.card} p-6`}>
-      <div className="flex justify-between items-center mb-6">
-        <h3 className={`text-xl font-bold ${themeClasses.title}`}>Traffic Data</h3>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+        <div className="flex items-center space-x-4">
+          <h3 className={`text-xl font-bold ${themeClasses.title}`}>Traffic Data</h3>
+          {data.length > 0 && (
+            <div className="flex items-center space-x-2">
+              <span className={`text-sm ${themeClasses.subtitle}`}>Show:</span>
+              <select
+                value={itemsPerPage}
+                onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
+                className={`px-2 py-1 border rounded text-sm focus:ring-2 focus:ring-black focus:border-black ${themeClasses.card} border-gray-300`}
+              >
+                <option value={5}>5</option>
+                <option value={10}>10</option>
+                <option value={25}>25</option>
+                <option value={50}>50</option>
+                <option value={100}>100</option>
+              </select>
+              <span className={`text-sm ${themeClasses.subtitle}`}>entries</span>
+            </div>
+          )}
+        </div>
         <div className="flex items-center space-x-2 sm:space-x-3">
           <button
             onClick={toggleDateFilter}
@@ -269,39 +323,88 @@ const DataTable: React.FC<DataTableProps> = ({
             </table>
           </div>
 
+          {/* Enhanced Pagination */}
           {totalPages > 1 && (
-            <div className="flex justify-between items-center mt-6">
-              <p className={`text-sm ${themeClasses.subtitle}`}>
-                Showing {startIndex + 1} to {Math.min(startIndex + itemsPerPage, data.length)} of {data.length} entries
-                {isFiltering && ` (filtered from ${totalDataCount} total)`}
-              </p>
-              <div className="flex space-x-1 sm:space-x-2">
+            <div className="flex flex-col sm:flex-row justify-between items-center mt-6 gap-4">
+              <div className="flex items-center space-x-4">
+                <p className={`text-sm ${themeClasses.subtitle}`}>
+                  Showing {startIndex + 1} to {Math.min(startIndex + itemsPerPage, data.length)} of {data.length} entries
+                  {isFiltering && ` (filtered from ${totalDataCount} total)`}
+                </p>
+              </div>
+              
+              <div className="flex items-center space-x-2">
+                {/* First Page Button */}
                 <button
-                  onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                  onClick={() => setCurrentPage(1)}
                   disabled={currentPage === 1}
-                  className={`px-2 sm:px-3 py-1 rounded text-sm ${
+                  className={`p-2 rounded ${
                     currentPage === 1
                       ? 'opacity-50 cursor-not-allowed'
                       : 'hover:bg-white/10'
                   } ${themeClasses.button} transition-colors`}
+                  title="First page"
                 >
-                  <span className="hidden sm:inline">Previous</span>
-                  <span className="sm:hidden">Prev</span>
+                  <ChevronsLeft className="w-4 h-4" />
                 </button>
-                <span className={`px-2 sm:px-3 py-1 text-sm ${themeClasses.cardText}`}>
-                  {currentPage} of {totalPages}
-                </span>
+
+                {/* Previous Page Button */}
+                <button
+                  onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                  disabled={currentPage === 1}
+                  className={`p-2 rounded ${
+                    currentPage === 1
+                      ? 'opacity-50 cursor-not-allowed'
+                      : 'hover:bg-white/10'
+                  } ${themeClasses.button} transition-colors`}
+                  title="Previous page"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+
+                {/* Page Numbers */}
+                <div className="flex space-x-1">
+                  {getPageNumbers().map((pageNum) => (
+                    <button
+                      key={pageNum}
+                      onClick={() => setCurrentPage(pageNum)}
+                      className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
+                        currentPage === pageNum
+                          ? 'bg-black text-white'
+                          : 'hover:bg-white/10 text-gray-700'
+                      }`}
+                    >
+                      {pageNum}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Next Page Button */}
                 <button
                   onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
                   disabled={currentPage === totalPages}
-                  className={`px-2 sm:px-3 py-1 rounded text-sm ${
+                  className={`p-2 rounded ${
                     currentPage === totalPages
                       ? 'opacity-50 cursor-not-allowed'
                       : 'hover:bg-white/10'
                   } ${themeClasses.button} transition-colors`}
+                  title="Next page"
                 >
-                  <span className="hidden sm:inline">Next</span>
-                  <span className="sm:hidden">Next</span>
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+
+                {/* Last Page Button */}
+                <button
+                  onClick={() => setCurrentPage(totalPages)}
+                  disabled={currentPage === totalPages}
+                  className={`p-2 rounded ${
+                    currentPage === totalPages
+                      ? 'opacity-50 cursor-not-allowed'
+                      : 'hover:bg-white/10'
+                  } ${themeClasses.button} transition-colors`}
+                  title="Last page"
+                >
+                  <ChevronsRight className="w-4 h-4" />
                 </button>
               </div>
             </div>
