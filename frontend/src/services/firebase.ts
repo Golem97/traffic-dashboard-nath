@@ -44,7 +44,7 @@ let emulatorConnectionState = {
 };
 
 // Connect to emulators in development with error handling
-if (import.meta.env.DEV) {
+if (import.meta.env.DEV && import.meta.env.VITE_FORCE_PRODUCTION !== 'true') {
   try {
     if (!emulatorConnectionState.auth) {
       connectAuthEmulator(auth, 'http://localhost:9199', { disableWarnings: true });
@@ -64,6 +64,10 @@ if (import.meta.env.DEV) {
   } catch (error) {
     console.warn('⚠️ Functions Emulator connection failed:', error);
   }
+} else if (import.meta.env.VITE_FORCE_PRODUCTION === 'true') {
+  console.log('🚀 Production mode: Emulators disabled');
+  console.log('🔐 Auth: Using production Firebase Auth');
+  console.log('⚡ Functions: Using production Cloud Functions');
 }
 
 // Export connection state for debugging

@@ -66,13 +66,63 @@ Firestore Database
    # Login to Firebase (if not already done)
    firebase login
 
-   # Set up environment variables
+   # Set up environment variables (see Environment Configuration below)
    cd frontend
-   cp .env.example .env
-   # Fill in your Firebase project credentials
+   # Create .env file with your Firebase credentials
    ```
 
-### Development
+## Environment Configuration
+
+The application supports two environments: **Development** (local emulators) and **Production** (Firebase cloud services).
+
+### Environment Variables
+
+Create `frontend/.env` with your Firebase configuration:
+
+```env
+# Firebase Configuration
+VITE_FIREBASE_API_KEY=your_api_key
+VITE_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=your_project_id
+VITE_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
+VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+VITE_FIREBASE_APP_ID=your_app_id
+
+# Environment Control
+VITE_FORCE_PRODUCTION=false
+```
+
+### Switching Between Environments
+
+The application uses the `VITE_FORCE_PRODUCTION` flag to switch between environments:
+
+| Environment | VITE_FORCE_PRODUCTION | Description |
+|-------------|----------------------|-------------|
+| **Development** | `false` | Uses Firebase emulators (local) |
+| **Production** | `true` | Uses Firebase cloud services |
+
+#### Development Mode (Local Emulators)
+```bash
+# Set in frontend/.env
+VITE_FORCE_PRODUCTION=false
+
+# Start Firebase emulators
+firebase emulators:start --only auth,functions,firestore
+
+# Start frontend (in new terminal)
+cd frontend && npm run dev
+```
+
+#### Production Mode (Cloud Services)
+```bash
+# Set in frontend/.env
+VITE_FORCE_PRODUCTION=true
+
+# Start frontend
+cd frontend && npm run dev
+```
+
+### Development Setup
 
 1. **Start Firebase emulators**
    ```bash
@@ -80,18 +130,39 @@ Firestore Database
    firebase emulators:start --only auth,functions,firestore
    ```
 
-2. **Start frontend development server**
+2. **Import sample data to local emulators**
+   ```bash
+   # Import 61 traffic entries to local Firestore
+   cd scripts && node import-to-local.js
+   ```
+
+3. **Start frontend development server**
    ```bash
    # In a new terminal
    cd frontend && npm run dev
    ```
 
-3. **Access the application**
-   - Frontend: http://localhost:5176
+4. **Access the application**
+   - Frontend: http://localhost:5173
    - Firebase UI: http://localhost:4100
    - Functions: http://localhost:5101
    - Authentication: http://localhost:9199
    - Firestore: http://localhost:8180
+
+### Quick Environment Switch
+
+To quickly switch between environments:
+
+```bash
+# Switch to development (local emulators)
+echo "VITE_FORCE_PRODUCTION=false" >> frontend/.env
+
+# Switch to production (cloud services)
+echo "VITE_FORCE_PRODUCTION=true" >> frontend/.env
+
+# Restart the frontend server after changing the flag
+cd frontend && npm run dev
+```
 
 ## API Endpoints
 
@@ -99,10 +170,22 @@ All endpoints require JWT authentication via `Authorization: Bearer <token>` hea
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| `GET` | `/getTrafficData` | Fetch all traffic entries for user |
+| `GET` | `/getTrafficData` | Fetch all traffic entries |
 | `POST` | `/addTrafficData` | Create new traffic entry |
 | `PUT` | `/updateTrafficData?id=:id` | Update existing entry |
 | `DELETE` | `/deleteTrafficData?id=:id` | Delete traffic entry |
+
+### Environment-Specific URLs
+
+The application automatically uses the correct API endpoints based on the environment:
+
+**Development (VITE_FORCE_PRODUCTION=false)**
+- Base URL: `http://localhost:5101/traffic-dashboard-nath/us-central1`
+- Uses Firebase emulators
+
+**Production (VITE_FORCE_PRODUCTION=true)**
+- Base URL: `https://gettrafficdata-rclpdk4xwa-uc.a.run.app`
+- Uses Firebase cloud services
 
 ## Project Structure
 
@@ -120,8 +203,10 @@ traffic-dashboard-nath/
 │   │   ├── constants/       # Application constants
 │   │   └── hooks/           # Custom React hooks
 │   └── package.json         # Frontend dependencies
-├── docs/                    # Documentation
-│   └── ARCHITECTURE.md      # Detailed architecture guide
+├── scripts/                 # Development utilities
+│   ├── data.json           # Sample traffic data
+│   ├── import-to-local.js  # Import data to local emulators
+│   └── import-to-production.js # Import data to production
 ├── firebase.json            # Firebase configuration
 ├── firestore.rules         # Database security rules
 └── firestore.indexes.json  # Database indexes
@@ -132,25 +217,21 @@ traffic-dashboard-nath/
 ### Implemented
 - ✅ **HTTP REST API** - 4 endpoints with full CRUD operations
 - ✅ **Authentication** - JWT-based user authentication
-- ✅ **Security** - User isolation and data validation
+- ✅ **Environment Management** - Easy switch between dev/prod
+- ✅ **Dashboard UI** - Complete traffic data visualization
+- ✅ **Data Tables** - Sortable and filterable data views
+- ✅ **Charts** - Interactive traffic charts with Recharts
 - ✅ **Type Safety** - Full TypeScript coverage
 - ✅ **Development Setup** - Firebase emulators configured
-- ✅ **Architecture Documentation** - Comprehensive guides
-
-### To Be Implemented
-- 🔄 **Dashboard UI** - Traffic data visualization
-- 🔄 **Data Tables** - Sortable and filterable data views
-- 🔄 **Charts** - Daily/weekly/monthly traffic charts
-- 🔄 **Authentication Pages** - Login and registration forms
-- 🔄 **Responsive Design** - Mobile-friendly interface
+- ✅ **Responsive Design** - Mobile-friendly interface
 
 ## Security
 
 - **No Direct Database Access**: Frontend cannot access Firestore directly
 - **JWT Authentication**: All API calls require valid authentication tokens
-- **User Isolation**: Each user can only access their own data
 - **Input Validation**: Server-side validation for all data operations
 - **CORS Configuration**: Proper cross-origin request handling
+- **Environment Isolation**: Separate development and production environments
 
 ## Development Commands
 
@@ -179,26 +260,42 @@ firebase deploy                      # Deploy entire project
 The `scripts/` directory contains helpful development utilities:
 
 ```bash
-# Import sample data (61 traffic entries)
-cd scripts && node import-data.js
+# Import sample data to local emulators (61 traffic entries)
+cd scripts && node import-to-local.js
 
-# Test all HTTP endpoints  
-cd scripts && node test-endpoints.js
+# Import sample data to production (requires service account key)
+cd scripts && node import-to-production.js
 ```
 
-See [scripts/README.md](scripts/README.md) for detailed documentation.
+## Troubleshooting
 
-## Environment Variables
+### Common Issues
 
-Create `frontend/.env` with your Firebase configuration:
+1. **CORS Errors in Development**
+   - Ensure Firebase emulators are running
+   - Check that `VITE_FORCE_PRODUCTION=false` in `.env`
+   - Restart the frontend server after changing environment flags
 
-```env
-VITE_FIREBASE_API_KEY=your_api_key
-VITE_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
-VITE_FIREBASE_PROJECT_ID=your_project_id
-VITE_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
-VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
-VITE_FIREBASE_APP_ID=your_app_id
+2. **Authentication Errors in Production**
+   - Verify Firebase project configuration
+   - Check that `VITE_FORCE_PRODUCTION=true` in `.env`
+   - Ensure Cloud Functions have proper CORS permissions
+
+3. **No Data Displayed**
+   - For development: Run `cd scripts && node import-to-local.js`
+   - For production: Ensure data exists in Firestore console
+   - Check browser console for API errors
+
+### Environment Debugging
+
+The application logs environment information in the browser console:
+
+```javascript
+// Check these logs in browser console
+🔧 API Configuration:
+  VITE_FORCE_PRODUCTION: false
+  API_BASE_URL: http://localhost:5101/traffic-dashboard-nath/us-central1
+  Mode: Development
 ```
 
 ## Contributing
@@ -206,13 +303,8 @@ VITE_FIREBASE_APP_ID=your_app_id
 1. Follow the established architecture (HTTP REST only)
 2. Maintain TypeScript type safety
 3. Use Tailwind CSS for styling
-4. Write tests for new features
+4. Test both development and production environments
 5. Update documentation for significant changes
-
-## Documentation
-
-- [Architecture Guide](docs/ARCHITECTURE.md) - Detailed technical architecture
-- [Frontend README](frontend/README.md) - Frontend-specific documentation
 
 ## License
 

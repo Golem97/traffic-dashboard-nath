@@ -9,24 +9,24 @@ interface ProtectedRouteProps {
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const { isAuthenticated, loading } = useAuth();
 
-  // Afficher un loader pendant que l'état d'authentification se charge
+  // Show a loader while authentication state is loading
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
+      <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-purple-500/30 border-t-purple-500 rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-white text-lg">Chargement...</p>
+          <div className="w-16 h-16 border-4 border-gray-300 border-t-black rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-black text-lg">Loading...</p>
         </div>
       </div>
     );
   }
 
-  // Rediriger vers l'authentification si l'utilisateur n'est pas connecté
+  // Redirect to authentication if user is not logged in
   if (!isAuthenticated) {
     return <Navigate to="/auth" replace />;
   }
 
-  // Afficher le contenu protégé si l'utilisateur est connecté
+  // Show protected content if user is logged in
   return <>{children}</>;
 };
 

@@ -104,23 +104,23 @@ export const VALIDATION_RULES = {
 
 // Error messages
 export const ERROR_MESSAGES = {
-  NETWORK: 'Problème de connexion réseau',
-  UNAUTHORIZED: 'Vous devez vous connecter',
-  FORBIDDEN: 'Vous n\'avez pas les permissions nécessaires',
-  NOT_FOUND: 'Ressource non trouvée',
-  VALIDATION: 'Données invalides',
-  SERVER_ERROR: 'Erreur serveur, veuillez réessayer',
-  UNKNOWN: 'Une erreur inattendue s\'est produite',
-  CONFLICT: 'Une entrée existe déjà pour cette date',
+  NETWORK: 'Network connection problem',
+  UNAUTHORIZED: 'You must be logged in',
+  FORBIDDEN: 'You do not have the necessary permissions',
+  NOT_FOUND: 'Resource not found',
+  VALIDATION: 'Invalid data',
+  SERVER_ERROR: 'Server error, please try again',
+  UNKNOWN: 'An unexpected error occurred',
+  CONFLICT: 'An entry already exists for this date',
 } as const;
 
 // Success messages
 export const SUCCESS_MESSAGES = {
-  TRAFFIC_DATA_CREATED: 'Données de trafic créées avec succès',
-  TRAFFIC_DATA_UPDATED: 'Données de trafic mises à jour avec succès',
-  TRAFFIC_DATA_DELETED: 'Données de trafic supprimées avec succès',
-  PROFILE_UPDATED: 'Profil mis à jour avec succès',
-  SETTINGS_SAVED: 'Paramètres sauvegardés avec succès',
+  TRAFFIC_DATA_CREATED: 'Traffic data created successfully',
+  TRAFFIC_DATA_UPDATED: 'Traffic data updated successfully',
+  TRAFFIC_DATA_DELETED: 'Traffic data deleted successfully',
+  PROFILE_UPDATED: 'Profile updated successfully',
+  SETTINGS_SAVED: 'Settings saved successfully',
 } as const;
 
 // Environment

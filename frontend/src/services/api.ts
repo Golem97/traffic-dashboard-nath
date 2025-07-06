@@ -6,15 +6,27 @@ import type { ApiResponse } from '../types/api';
 // "Create HTTP-triggered Firebase Cloud Functions to handle all operations"
 
 // API Configuration
-const API_BASE_URL = import.meta.env.DEV 
-  ? 'http://localhost:5101/traffic-dashboard-nath/us-central1' 
-  : 'https://us-central1-traffic-dashboard-nath.cloudfunctions.net';
+const API_BASE_URL = import.meta.env.VITE_FORCE_PRODUCTION === 'true'
+  ? 'https://gettrafficdata-rclpdk4xwa-uc.a.run.app'
+  : 'http://localhost:5101/traffic-dashboard-nath/us-central1';
+
+// Debug logs
+console.log('🔧 API Configuration:');
+console.log('  VITE_FORCE_PRODUCTION:', import.meta.env.VITE_FORCE_PRODUCTION);
+console.log('  API_BASE_URL:', API_BASE_URL);
+console.log('  Mode:', import.meta.env.DEV ? 'Development' : 'Production');
 
 const API_ENDPOINTS = {
   TRAFFIC: '/getTrafficData',
-  ADD_TRAFFIC: '/addTrafficData',
-  UPDATE_TRAFFIC: '/updateTrafficData',
-  DELETE_TRAFFIC: '/deleteTrafficData',
+  ADD_TRAFFIC: import.meta.env.VITE_FORCE_PRODUCTION === 'true' 
+    ? 'https://addtrafficdata-rclpdk4xwa-uc.a.run.app'
+    : '/addTrafficData',
+  UPDATE_TRAFFIC: import.meta.env.VITE_FORCE_PRODUCTION === 'true'
+    ? 'https://updatetrafficdata-rclpdk4xwa-uc.a.run.app'
+    : '/updateTrafficData',
+  DELETE_TRAFFIC: import.meta.env.VITE_FORCE_PRODUCTION === 'true'
+    ? 'https://deletetrafficdata-rclpdk4xwa-uc.a.run.app'
+    : '/deleteTrafficData',
 } as const;
 
 // Helper function to get auth token
@@ -42,7 +54,10 @@ const makeRequest = async <T>(
     ...options.headers,
   });
 
-  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+  // Use full URL if endpoint starts with https, otherwise combine with base URL
+  const url = endpoint.startsWith('https') ? endpoint : `${API_BASE_URL}${endpoint}`;
+
+  const response = await fetch(url, {
     ...options,
     headers,
   });
@@ -62,7 +77,7 @@ export class ApiService {
     if (error instanceof Error) {
       throw new Error(error.message);
     }
-    throw new Error('Une erreur inconnue s\'est produite');
+    throw new Error('An unknown error occurred');
   }
 
   // GET /api/traffic - Fetch all traffic entries

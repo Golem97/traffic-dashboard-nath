@@ -1,4 +1,3 @@
-import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import AuthPage from './pages/AuthPage';
 import Dashboard from './pages/Dashboard';
@@ -9,13 +8,13 @@ function App() {
     <Router>
       <div className="App">
         <Routes>
-          {/* Route par défaut - redirection vers dashboard */}
+          {/* Default route - redirect to dashboard */}
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
           
-          {/* Page d'authentification */}
+          {/* Authentication page */}
           <Route path="/auth" element={<AuthPage />} />
           
-          {/* Dashboard protégé */}
+          {/* Protected dashboard */}
           <Route 
             path="/dashboard" 
             element={
@@ -25,7 +24,7 @@ function App() {
             } 
           />
           
-          {/* Route catch-all pour les pages non trouvées */}
+          {/* Catch-all route for not found pages */}
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
       </div>
