@@ -2,6 +2,55 @@
 
 A fullstack web application for managing and visualizing website traffic data, built with React, Firebase Cloud Functions, and Firestore.
 
+## 🚀 Live Demo
+
+**🌐 Application déployée : https://traffic-dashboard-nath.web.app**
+
+### 🎯 For Evaluators - Quick Start
+
+1. **Visit the live demo**: https://traffic-dashboard-nath.web.app
+2. **Sign up** using email/password or Google Sign-In
+3. **Explore features**: The app comes pre-loaded with 61 traffic entries for testing
+
+### ✅ Key Features to Test
+- 📈 **Interactive Charts**: Line/Bar charts with Daily/Weekly/Monthly views
+- 📊 **Real-time Dashboard**: Traffic statistics with responsive cards layout
+- 🔍 **Advanced Filtering**: Date range filters with pagination (5-100 entries per page)
+- ✏️ **Full CRUD Operations**: Add/Edit/Delete traffic entries with form validation
+- 📱 **Responsive Design**: Optimized for mobile, tablet, and desktop
+- 🔐 **Secure Authentication**: Email/password and Google OAuth integration
+- 🔄 **Reset Data**: Restore original demo data (assessment feature)
+
+### 🧪 Assessment Features
+
+**🔄 Reset Data Functionality**
+- **Purpose**: Allows evaluators to experiment with data modifications and restore the original dataset
+- **Location**: Available in dashboard header (desktop) and mobile menu
+- **Usage**: After testing CRUD operations, click "Reset Data" to restore the original 61 traffic entries
+- **Note**: This feature is included specifically for assessment purposes to enable thorough testing
+
+**How to test the complete workflow:**
+1. **Explore** the default dashboard with 61 entries
+2. **Add** new traffic entries using the "+ Add Entry" button
+3. **Edit** existing entries by clicking the edit icon
+4. **Delete** some entries to see real-time updates
+5. **Filter** data by date ranges and test pagination
+6. **Reset** back to original data with the "Reset Data" button
+7. **Repeat** as needed for thorough evaluation
+
+### 🛠️ Technical Implementation
+- **Architecture**: HTTP REST API through Firebase Cloud Functions (no direct Firestore access)
+- **Security**: JWT authentication + Firestore rules blocking direct frontend access
+- **Data Format**: `{"date": "2025-03-01", "visits": 120}`
+
+### 📊 Demo Data
+The live application comes with **61 pre-loaded traffic entries** spanning multiple months, allowing immediate testing of all features including:
+- Chart visualization with realistic data patterns
+- Filtering and pagination with substantial data sets
+- Statistical calculations (total visits: 7,798 | average: 128 | highest day: 188)
+
+---
+
 ## Project Overview
 
 This application allows users to track and analyze website traffic through an intuitive dashboard interface. Features include data visualization with charts, CRUD operations for traffic entries, and user authentication.
@@ -214,16 +263,33 @@ traffic-dashboard-nath/
 
 ## Core Features
 
+### Project Requirements Status
+
+| Requirement | Status | Implementation |
+|-------------|---------|----------------|
+| **Interactive Dashboard** | ✅ Complete | React dashboard with traffic visualization |
+| **Firebase Integration** | ✅ Complete | Authentication, Cloud Functions, Firestore |
+| **Working Link (Free Tier)** | ✅ Complete | **https://traffic-dashboard-nath.web.app** |
+| **CRUD Operations** | ✅ Complete | Add/Edit/Delete traffic entries with validation |
+| **Data Visualization** | ✅ Complete | Interactive charts (Line/Bar) with date aggregation |
+| **User Authentication** | ✅ Complete | Email/password + Google OAuth |
+| **Responsive Design** | ✅ Complete | Mobile-first design with Tailwind CSS |
+| **Real-time Updates** | ✅ Complete | Live dashboard statistics |
+| **Error Handling** | ✅ Complete | User-friendly error messages and loading states |
+| **Type Safety** | ✅ Complete | Full TypeScript implementation |
+
+### Bonus Features Implemented
+- ✅ **Advanced Pagination** - Page numbers, items per page selector (5-100)
+- ✅ **Date Range Filtering** - Custom date filters with clear indicators
+- ✅ **Sorting** - Sortable columns (date/visits) with visual indicators
+- ✅ **Multiple Chart Types** - Line and Bar charts with smooth transitions
+- ✅ **Data Aggregation** - Daily/Weekly/Monthly view modes
+- ✅ **Modern UI** - Glass morphism design with animations
+- ✅ **Mobile Optimization** - Touch-friendly interface with responsive controls
+- ✅ **Reset Data Feature** - Restore original demo data for assessment testing
+
 ### Implemented
 - ✅ **HTTP REST API** - 4 endpoints with full CRUD operations
-- ✅ **Authentication** - JWT-based user authentication
-- ✅ **Environment Management** - Easy switch between dev/prod
-- ✅ **Dashboard UI** - Complete traffic data visualization
-- ✅ **Data Tables** - Sortable and filterable data views
-- ✅ **Charts** - Interactive traffic charts with Recharts
-- ✅ **Type Safety** - Full TypeScript coverage
-- ✅ **Development Setup** - Firebase emulators configured
-- ✅ **Responsive Design** - Mobile-friendly interface
 
 ## Security
 
