@@ -1,12 +1,19 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { ApiService } from '../services/api';
 import type { TrafficData, TrafficStats } from '../types/traffic';
 
 interface UseTrafficDataReturn {
   data: TrafficData[];
+  filteredData: TrafficData[];
   stats: TrafficStats | null;
+  filteredStats: TrafficStats | null;
   loading: boolean;
   error: string | null;
+  dateFrom: string;
+  dateTo: string;
+  setDateFrom: (date: string) => void;
+  setDateTo: (date: string) => void;
+  clearDateFilter: () => void;
   refreshData: () => Promise<void>;
   addEntry: (entry: { date: string; visits: number }) => Promise<void>;
   updateEntry: (id: string, entry: { date: string; visits: number }) => Promise<void>;
@@ -18,6 +25,8 @@ export const useTrafficData = (): UseTrafficDataReturn => {
   const [stats, setStats] = useState<TrafficStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [dateFrom, setDateFrom] = useState<string>('');
+  const [dateTo, setDateTo] = useState<string>('');
 
   const calculateStats = useCallback((trafficData: TrafficData[]): TrafficStats => {
     if (trafficData.length === 0) {
@@ -51,6 +60,37 @@ export const useTrafficData = (): UseTrafficDataReturn => {
         end: sortedDates[sortedDates.length - 1] || ''
       }
     };
+  }, []);
+
+  // Filter data by date range
+  const filteredData = useMemo(() => {
+    if (!dateFrom && !dateTo) return data;
+    
+    return data.filter((item) => {
+      const itemDate = new Date(item.date);
+      const fromDate = dateFrom ? new Date(dateFrom) : null;
+      const toDate = dateTo ? new Date(dateTo) : null;
+      
+      if (fromDate && toDate) {
+        return itemDate >= fromDate && itemDate <= toDate;
+      } else if (fromDate) {
+        return itemDate >= fromDate;
+      } else if (toDate) {
+        return itemDate <= toDate;
+      }
+      
+      return true;
+    });
+  }, [data, dateFrom, dateTo]);
+
+  // Calculate stats for filtered data
+  const filteredStats = useMemo(() => {
+    return calculateStats(filteredData);
+  }, [filteredData, calculateStats]);
+
+  const clearDateFilter = useCallback(() => {
+    setDateFrom('');
+    setDateTo('');
   }, []);
 
   const refreshData = useCallback(async () => {
@@ -110,9 +150,16 @@ export const useTrafficData = (): UseTrafficDataReturn => {
 
   return {
     data,
+    filteredData,
     stats,
+    filteredStats,
     loading,
     error,
+    dateFrom,
+    dateTo,
+    setDateFrom,
+    setDateTo,
+    clearDateFilter,
     refreshData,
     addEntry,
     updateEntry,

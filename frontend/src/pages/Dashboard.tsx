@@ -10,15 +10,32 @@ import {
   ChartControls
 } from '../components/dashboard';
 import type { TrafficData } from '../types/traffic';
+import type { ChartView } from '../components/dashboard/ChartControls';
 
 const Dashboard: React.FC = () => {
   const { themeClasses } = useTheme();
-  const { data, stats, loading, error, addEntry, updateEntry, deleteEntry } = useTrafficData();
+  const { 
+    data, 
+    filteredData, 
+    stats, 
+    filteredStats, 
+    loading, 
+    error, 
+    dateFrom, 
+    dateTo, 
+    setDateFrom, 
+    setDateTo, 
+    clearDateFilter, 
+    addEntry, 
+    updateEntry, 
+    deleteEntry 
+  } = useTrafficData();
   
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editData, setEditData] = useState<TrafficData | null>(null);
   const [modalLoading, setModalLoading] = useState(false);
   const [chartType, setChartType] = useState<'line' | 'bar'>('line');
+  const [chartView, setChartView] = useState<ChartView>('daily');
 
   const handleAdd = () => {
     setEditData(null);
@@ -61,6 +78,19 @@ const Dashboard: React.FC = () => {
     setEditData(null);
   };
 
+  // Use filtered stats for display, but show if filtering is active
+  const displayStats = filteredStats || stats;
+  const isFiltering = dateFrom || dateTo;
+
+  const getChartTitle = () => {
+    const viewLabels = {
+      daily: 'Daily Traffic Analytics',
+      weekly: 'Weekly Traffic Analytics',
+      monthly: 'Monthly Traffic Analytics'
+    };
+    return viewLabels[chartView];
+  };
+
   return (
     <div className={themeClasses.background}>
       <DashboardHeader />
@@ -73,22 +103,54 @@ const Dashboard: React.FC = () => {
           </div>
         )}
 
+        {/* Filter Status */}
+        {isFiltering && (
+          <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg">
+            <p className="text-blue-700 dark:text-blue-300">
+              📊 Showing filtered data ({filteredData.length} of {data.length} entries)
+              {dateFrom && ` from ${new Date(dateFrom).toLocaleDateString()}`}
+              {dateTo && ` to ${new Date(dateTo).toLocaleDateString()}`}
+            </p>
+          </div>
+        )}
+
         {/* Stats Cards */}
-        <StatsCards stats={stats} loading={loading} />
+        <StatsCards stats={displayStats} loading={loading} />
 
         {/* Chart Section */}
         <div className={`${themeClasses.card} p-8 mb-8`}>
           <div className="flex justify-between items-center mb-6">
-            <h3 className={`text-xl font-bold ${themeClasses.title}`}>Traffic Analytics</h3>
-            <ChartControls chartType={chartType} onChartTypeChange={setChartType} />
+            <h3 className={`text-xl font-bold ${themeClasses.title}`}>
+              {getChartTitle()}
+              {isFiltering && (
+                <span className="text-sm font-normal text-blue-500 ml-2">(Filtered)</span>
+              )}
+            </h3>
           </div>
-          <TrafficChart data={data} loading={loading} chartType={chartType} />
+          <ChartControls 
+            chartType={chartType} 
+            chartView={chartView}
+            onChartTypeChange={setChartType} 
+            onChartViewChange={setChartView}
+          />
+          <TrafficChart 
+            data={filteredData} 
+            loading={loading} 
+            chartType={chartType} 
+            chartView={chartView}
+          />
         </div>
 
         {/* Data Table */}
         <DataTable
-          data={data}
+          data={filteredData}
           loading={loading}
+          dateFrom={dateFrom}
+          dateTo={dateTo}
+          setDateFrom={setDateFrom}
+          setDateTo={setDateTo}
+          clearDateFilter={clearDateFilter}
+          totalDataCount={data.length}
           onAdd={handleAdd}
           onEdit={handleEdit}
           onDelete={handleDelete}

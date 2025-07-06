@@ -1,11 +1,17 @@
 import React, { useState } from 'react';
-import { Edit2, Trash2, Plus, ChevronUp, ChevronDown } from 'lucide-react';
+import { Edit2, Trash2, Plus, ChevronUp, ChevronDown, Calendar, X, Filter } from 'lucide-react';
 import { useTheme } from '../../hooks/useTheme';
 import type { TrafficData } from '../../types/traffic';
 
 interface DataTableProps {
   data: TrafficData[];
   loading: boolean;
+  dateFrom: string;
+  dateTo: string;
+  setDateFrom: (date: string) => void;
+  setDateTo: (date: string) => void;
+  clearDateFilter: () => void;
+  totalDataCount: number;
   onEdit: (item: TrafficData) => void;
   onDelete: (id: string) => void;
   onAdd: () => void;
@@ -14,11 +20,24 @@ interface DataTableProps {
 type SortField = 'date' | 'visits';
 type SortOrder = 'asc' | 'desc';
 
-const DataTable: React.FC<DataTableProps> = ({ data, loading, onEdit, onDelete, onAdd }) => {
+const DataTable: React.FC<DataTableProps> = ({ 
+  data, 
+  loading, 
+  dateFrom, 
+  dateTo, 
+  setDateFrom, 
+  setDateTo, 
+  clearDateFilter, 
+  totalDataCount,
+  onEdit, 
+  onDelete, 
+  onAdd 
+}) => {
   const { themeClasses } = useTheme();
   const [sortField, setSortField] = useState<SortField>('date');
   const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
   const [currentPage, setCurrentPage] = useState(1);
+  const [showDateFilter, setShowDateFilter] = useState(false);
   const itemsPerPage = 10;
 
   const handleSort = (field: SortField) => {
@@ -29,6 +48,25 @@ const DataTable: React.FC<DataTableProps> = ({ data, loading, onEdit, onDelete, 
       setSortOrder('desc');
     }
     setCurrentPage(1);
+  };
+
+  const handleDateFromChange = (date: string) => {
+    setDateFrom(date);
+    setCurrentPage(1);
+  };
+
+  const handleDateToChange = (date: string) => {
+    setDateTo(date);
+    setCurrentPage(1);
+  };
+
+  const handleClearFilter = () => {
+    clearDateFilter();
+    setCurrentPage(1);
+  };
+
+  const toggleDateFilter = () => {
+    setShowDateFilter(!showDateFilter);
   };
 
   const sortedData = [...data].sort((a, b) => {
@@ -61,6 +99,8 @@ const DataTable: React.FC<DataTableProps> = ({ data, loading, onEdit, onDelete, 
       <ChevronDown className="w-4 h-4 text-blue-500" />;
   };
 
+  const isFiltering = dateFrom || dateTo;
+
   if (loading) {
     return (
       <div className={`${themeClasses.card} p-8`}>
@@ -75,20 +115,95 @@ const DataTable: React.FC<DataTableProps> = ({ data, loading, onEdit, onDelete, 
     <div className={`${themeClasses.card} p-6`}>
       <div className="flex justify-between items-center mb-6">
         <h3 className={`text-xl font-bold ${themeClasses.title}`}>Traffic Data</h3>
-        <button
-          onClick={onAdd}
-          className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Add Entry</span>
-        </button>
+        <div className="flex items-center space-x-3">
+          <button
+            onClick={toggleDateFilter}
+            className={`px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors ${
+              showDateFilter || isFiltering
+                ? 'bg-blue-500 text-white hover:bg-blue-600'
+                : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+            }`}
+          >
+            <Filter className="w-4 h-4" />
+            <span>Filter</span>
+            {isFiltering && (
+              <span className="bg-white/20 text-xs px-1.5 py-0.5 rounded-full">
+                {data.length}/{totalDataCount}
+              </span>
+            )}
+          </button>
+          <button
+            onClick={onAdd}
+            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Add Entry</span>
+          </button>
+        </div>
       </div>
+
+      {/* Collapsible Date Range Filter */}
+      {showDateFilter && (
+        <div className={`mb-6 p-4 rounded-lg border ${themeClasses.card} bg-gray-50 dark:bg-gray-800/50 transition-all duration-200 ease-in-out`}>
+          <div className="flex items-center space-x-4 flex-wrap gap-2">
+            <div className="flex items-center space-x-2">
+              <Calendar className={`w-4 h-4 ${themeClasses.subtitle}`} />
+              <span className={`text-sm font-medium ${themeClasses.subtitle}`}>Filter by date:</span>
+            </div>
+            
+            <div className="flex items-center space-x-2">
+              <label className={`text-sm ${themeClasses.subtitle}`}>From:</label>
+              <input
+                type="date"
+                value={dateFrom}
+                onChange={(e) => handleDateFromChange(e.target.value)}
+                className={`px-3 py-1 border rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                  themeClasses.card
+                } border-gray-300 dark:border-gray-600`}
+              />
+            </div>
+            
+            <div className="flex items-center space-x-2">
+              <label className={`text-sm ${themeClasses.subtitle}`}>To:</label>
+              <input
+                type="date"
+                value={dateTo}
+                onChange={(e) => handleDateToChange(e.target.value)}
+                className={`px-3 py-1 border rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                  themeClasses.card
+                } border-gray-300 dark:border-gray-600`}
+              />
+            </div>
+            
+            {isFiltering && (
+              <button
+                onClick={handleClearFilter}
+                className="flex items-center space-x-1 px-2 py-1 text-sm text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md transition-colors"
+              >
+                <X className="w-3 h-3" />
+                <span>Clear</span>
+              </button>
+            )}
+            
+            {isFiltering && (
+              <div className={`text-sm ${themeClasses.subtitle} ml-4`}>
+                Showing {data.length} of {totalDataCount} entries
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {data.length === 0 ? (
         <div className="text-center py-12">
-          <p className={themeClasses.subtitle}>No traffic data available</p>
+          <p className={themeClasses.subtitle}>
+            {totalDataCount === 0 ? "No traffic data available" : "No data found for the selected date range"}
+          </p>
           <p className={`${themeClasses.subtitle} text-sm mt-2`}>
-            Click "Add Entry" to create your first traffic record
+            {totalDataCount === 0 
+              ? "Click \"Add Entry\" to create your first traffic record"
+              : "Try adjusting your date filter or clear the filter to see all data"
+            }
           </p>
         </div>
       ) : (
@@ -158,6 +273,7 @@ const DataTable: React.FC<DataTableProps> = ({ data, loading, onEdit, onDelete, 
             <div className="flex justify-between items-center mt-6">
               <p className={`text-sm ${themeClasses.subtitle}`}>
                 Showing {startIndex + 1} to {Math.min(startIndex + itemsPerPage, data.length)} of {data.length} entries
+                {isFiltering && ` (filtered from ${totalDataCount} total)`}
               </p>
               <div className="flex space-x-2">
                 <button
