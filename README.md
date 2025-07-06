@@ -291,6 +291,87 @@ traffic-dashboard-nath/
 ### Implemented
 - ✅ **HTTP REST API** - 4 endpoints with full CRUD operations
 
+## Testing
+
+The project includes comprehensive unit tests for both frontend and backend components with **100% test pass rate**.
+
+### Test Coverage Overview
+
+**📊 Total: 43 Tests (100% Pass Rate)**
+- Backend: 14 tests
+- Frontend: 29 tests
+
+### Backend Tests (Jest)
+
+**Location**: `functions/src/__tests__/`
+
+```bash
+# Run backend tests
+cd functions && npm test
+```
+
+**Coverage Areas (14 tests):**
+
+| Test Category | Tests | Coverage |
+|---------------|-------|----------|
+| **Authentication** | 4 tests | JWT token verification, unauthorized access protection |
+| **CRUD Operations** | 6 tests | Create, read, update, delete with validation |
+| **Error Handling** | 4 tests | HTTP status codes, CORS, method validation |
+
+**Key Test Scenarios:**
+- ✅ **Security**: Token verification, unauthorized access rejection
+- ✅ **CRUD Operations**: All endpoints with proper validation
+- ✅ **Data Validation**: Date format, visits range (0-1,000,000), duplicate prevention
+- ✅ **HTTP Compliance**: Correct status codes (200, 201, 400, 401, 404, 409, 500)
+- ✅ **CORS Support**: Preflight requests and cross-origin headers
+
+### Frontend Tests (Vitest)
+
+**Location**: `frontend/src/**/__tests__/`
+
+```bash
+# Run frontend tests
+cd frontend && npm run test
+```
+
+**Coverage Areas (29 tests):**
+
+| Test Category | Tests | Coverage |
+|---------------|-------|----------|
+| **API Service** | 12 tests | HTTP calls, authentication, error handling, calculations |
+| **UI Components** | 17 tests | Rendering, interactions, responsive design, state management |
+
+**Key Test Scenarios:**
+- ✅ **API Integration**: All CRUD operations with authentication headers
+- ✅ **Statistics Calculation**: Mathematical accuracy for totals, averages, min/max
+- ✅ **UI Components**: StatsCards rendering, ChartControls interactions
+- ✅ **Responsive Design**: Mobile/desktop layouts, button states
+- ✅ **Error Handling**: Network failures, HTTP error responses
+- ✅ **Form Validation**: Date formats, numeric inputs, edge cases
+
+### Test Quality Standards
+
+- All tests validate actual business logic
+- Authentication flows with JWT tokens
+- Data validation matching API constraints
+- UI interactions with proper state management
+
+### Running Tests
+
+```bash
+# Backend tests (Jest)
+cd functions
+npm test                 # Run all tests
+npm run test:watch      # Watch mode
+npm run test:coverage   # Coverage report
+
+# Frontend tests (Vitest)
+cd frontend
+npm run test            # Run all tests
+npm run test:ui         # Visual test interface
+npm run test:coverage   # Coverage report
+```
+
 ## Security
 
 - **No Direct Database Access**: Frontend cannot access Firestore directly
