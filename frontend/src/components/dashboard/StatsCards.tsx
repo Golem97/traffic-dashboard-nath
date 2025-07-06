@@ -43,18 +43,18 @@ const StatsCards: React.FC<StatsCardsProps> = ({ stats, loading }) => {
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-8">
       {cards.map((card) => {
         const Icon = card.icon;
         return (
           <div
             key={card.title}
-            className={`${themeClasses.card} p-6 transition-all duration-200 hover:bg-white/10`}
+            className={`${themeClasses.card} p-4 sm:p-6 transition-all duration-200 hover:bg-white/10`}
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className={`${themeClasses.subtitle} text-sm`}>{card.title}</p>
-                <p className={`text-2xl font-bold ${themeClasses.cardText}`}>
+                <p className={`${themeClasses.subtitle} text-xs sm:text-sm`}>{card.title}</p>
+                <p className={`text-lg sm:text-2xl font-bold ${themeClasses.cardText}`}>
                   {loading ? (
                     <span className="animate-pulse">---</span>
                   ) : (
@@ -62,7 +62,7 @@ const StatsCards: React.FC<StatsCardsProps> = ({ stats, loading }) => {
                   )}
                 </p>
               </div>
-              <Icon className={`w-10 h-10 ${card.color}`} />
+              <Icon className={`w-8 h-8 sm:w-10 sm:h-10 ${card.color}`} />
             </div>
           </div>
         );

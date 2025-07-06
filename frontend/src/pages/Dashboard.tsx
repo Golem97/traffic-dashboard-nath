@@ -98,15 +98,15 @@ const Dashboard: React.FC = () => {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Error Message */}
         {error && (
-          <div className="mb-6 p-4 bg-red-100 dark:bg-red-900/20 border border-red-300 dark:border-red-700 rounded-lg">
-            <p className="text-red-700 dark:text-red-300">{error}</p>
+          <div className="mb-6 p-4 bg-red-100 border border-red-300 rounded-lg">
+            <p className="text-red-700">{error}</p>
           </div>
         )}
 
         {/* Filter Status */}
         {isFiltering && (
-          <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg">
-            <p className="text-blue-700 dark:text-blue-300">
+          <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <p className="text-blue-700">
               📊 Showing filtered data ({filteredData.length} of {data.length} entries)
               {dateFrom && ` from ${new Date(dateFrom).toLocaleDateString()}`}
               {dateTo && ` to ${new Date(dateTo).toLocaleDateString()}`}
@@ -118,21 +118,21 @@ const Dashboard: React.FC = () => {
         <StatsCards stats={displayStats} loading={loading} />
 
         {/* Chart Section */}
-        <div className={`${themeClasses.card} p-8 mb-8`}>
-          <div className="flex justify-between items-center mb-6">
-            <h3 className={`text-xl font-bold ${themeClasses.title}`}>
+        <div className={`${themeClasses.card} p-4 sm:p-6 lg:p-8 mb-8`}>
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 sm:mb-8 lg:mb-20 gap-4">
+            <h3 className={`text-lg sm:text-xl font-bold ${themeClasses.title}`}>
               {getChartTitle()}
               {isFiltering && (
-                <span className="text-sm font-normal text-blue-500 ml-2">(Filtered)</span>
+                <span className="text-sm font-normal text-blue-500 ml-2 ">(Filtered)</span>
               )}
             </h3>
+            <ChartControls 
+              chartType={chartType} 
+              chartView={chartView}
+              onChartTypeChange={setChartType} 
+              onChartViewChange={setChartView}
+            />
           </div>
-          <ChartControls 
-            chartType={chartType} 
-            chartView={chartView}
-            onChartTypeChange={setChartType} 
-            onChartViewChange={setChartView}
-          />
           <TrafficChart 
             data={filteredData} 
             loading={loading} 

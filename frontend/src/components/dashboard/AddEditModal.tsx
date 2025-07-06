@@ -88,15 +88,15 @@ const AddEditModal: React.FC<AddEditModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-black/20 flex items-center justify-center z-50 p-4">
       <div className={`${themeClasses.card} w-full max-w-md mx-auto`}>
-        <div className="flex justify-between items-center p-6 border-b border-gray-200 dark:border-gray-700">
+        <div className="flex justify-between items-center p-6 border-b border-gray-200">
           <h2 className={`text-xl font-bold ${themeClasses.title}`}>
             {editData ? 'Edit Traffic Entry' : 'Add Traffic Entry'}
           </h2>
           <button
             onClick={onClose}
-            className={`p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 ${themeClasses.subtitle} transition-colors`}
+            className={`p-2 rounded-lg hover:bg-gray-100 ${themeClasses.subtitle} transition-colors`}
           >
             <X className="w-5 h-5" />
           </button>
@@ -112,15 +112,15 @@ const AddEditModal: React.FC<AddEditModalProps> = ({
                 type="date"
                 value={formData.date}
                 onChange={(e) => handleInputChange('date', e.target.value)}
-                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-black focus:border-black ${
                   errors.date 
-                    ? 'border-red-500' 
-                    : 'border-gray-300 dark:border-gray-600'
-                } bg-white dark:bg-gray-800 ${themeClasses.cardText}`}
+                    ? 'border-black' 
+                    : 'border-gray-300'
+                } bg-white ${themeClasses.cardText}`}
                 disabled={loading}
               />
               {errors.date && (
-                <p className="text-red-500 text-sm mt-1">{errors.date}</p>
+                <p className="text-black text-sm mt-1">{errors.date}</p>
               )}
             </div>
 
@@ -135,15 +135,15 @@ const AddEditModal: React.FC<AddEditModalProps> = ({
                 value={formData.visits}
                 onChange={(e) => handleInputChange('visits', e.target.value)}
                 placeholder="Enter number of visits"
-                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-black focus:border-black ${
                   errors.visits 
-                    ? 'border-red-500' 
-                    : 'border-gray-300 dark:border-gray-600'
-                } bg-white dark:bg-gray-800 ${themeClasses.cardText}`}
+                    ? 'border-black' 
+                    : 'border-gray-300'
+                } bg-white ${themeClasses.cardText}`}
                 disabled={loading}
               />
               {errors.visits && (
-                <p className="text-red-500 text-sm mt-1">{errors.visits}</p>
+                <p className="text-black text-sm mt-1">{errors.visits}</p>
               )}
             </div>
           </div>
@@ -153,14 +153,14 @@ const AddEditModal: React.FC<AddEditModalProps> = ({
               type="button"
               onClick={onClose}
               disabled={loading}
-              className={`px-4 py-2 rounded-lg ${themeClasses.button} hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors disabled:opacity-50`}
+              className={`px-4 py-2 rounded-lg ${themeClasses.button} hover:bg-gray-100 transition-colors disabled:opacity-50`}
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors disabled:opacity-50"
+              className="bg-black hover:bg-gray-800 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors disabled:opacity-50"
             >
               {loading ? (
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>

@@ -1,225 +1,190 @@
 import React, { useMemo } from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
+import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { useTheme } from '../../hooks/useTheme';
 import type { TrafficData } from '../../types/traffic';
-import type { ChartView } from './ChartControls';
+import { format, parseISO, startOfWeek, startOfMonth, eachWeekOfInterval, eachMonthOfInterval } from 'date-fns';
 
 interface TrafficChartProps {
   data: TrafficData[];
   loading: boolean;
-  chartType?: 'line' | 'bar';
-  chartView?: ChartView;
+  chartType: 'line' | 'bar';
+  chartView: 'daily' | 'weekly' | 'monthly';
 }
 
-const TrafficChart: React.FC<TrafficChartProps> = ({ 
-  data, 
-  loading, 
-  chartType = 'line', 
-  chartView = 'daily' 
-}) => {
-  const { isDarkMode, themeClasses } = useTheme();
+type AggregatedData = {
+  date: string;
+  visits: number;
+  period: string;
+};
+
+const TrafficChart: React.FC<TrafficChartProps> = ({ data, loading, chartType, chartView }) => {
+  const { themeClasses } = useTheme();
 
   const aggregatedData = useMemo(() => {
-    if (!data.length) return [];
+    if (!data || data.length === 0) return [];
 
     const sortedData = [...data].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
     switch (chartView) {
-      case 'daily':
-        return sortedData.map(item => ({
-          date: new Date(item.date).toLocaleDateString('en-US', { 
-            month: 'short', 
-            day: 'numeric' 
-          }),
-          visits: item.visits,
-          fullDate: item.date,
-          period: item.date,
-        }));
-
       case 'weekly': {
-        const weeklyData = new Map<string, { visits: number; dates: string[]; startDate: Date }>();
+        const weeklyData = new Map<string, { visits: number; count: number }>();
         
         sortedData.forEach(item => {
-          const date = new Date(item.date);
-          const weekStart = new Date(date);
-          weekStart.setDate(date.getDate() - date.getDay()); // Start of week (Sunday)
-          const weekKey = weekStart.toISOString().split('T')[0];
+          const weekStart = startOfWeek(parseISO(item.date));
+          const weekKey = format(weekStart, 'yyyy-MM-dd');
           
           if (!weeklyData.has(weekKey)) {
-            weeklyData.set(weekKey, { visits: 0, dates: [], startDate: weekStart });
+            weeklyData.set(weekKey, { visits: 0, count: 0 });
           }
           
-          const week = weeklyData.get(weekKey)!;
-          week.visits += item.visits;
-          week.dates.push(item.date);
+          const existing = weeklyData.get(weekKey)!;
+          existing.visits += item.visits;
+          existing.count += 1;
         });
 
-        return Array.from(weeklyData.entries()).map(([weekKey, week]) => {
-          const weekEnd = new Date(week.startDate);
-          weekEnd.setDate(week.startDate.getDate() + 6);
-          
-          return {
-            date: `${week.startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${weekEnd.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`,
-            visits: week.visits,
-            fullDate: weekKey,
-            period: `Week of ${week.startDate.toLocaleDateString('en-US')}`,
-          };
-        });
+        return Array.from(weeklyData.entries()).map(([weekStart, { visits }]) => ({
+          date: weekStart,
+          visits,
+          period: `Week of ${format(parseISO(weekStart), 'MMM dd')}`
+        }));
       }
 
       case 'monthly': {
-        const monthlyData = new Map<string, { visits: number; dates: string[] }>();
+        const monthlyData = new Map<string, { visits: number; count: number }>();
         
         sortedData.forEach(item => {
-          const date = new Date(item.date);
-          const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+          const monthStart = startOfMonth(parseISO(item.date));
+          const monthKey = format(monthStart, 'yyyy-MM-dd');
           
           if (!monthlyData.has(monthKey)) {
-            monthlyData.set(monthKey, { visits: 0, dates: [] });
+            monthlyData.set(monthKey, { visits: 0, count: 0 });
           }
           
-          const month = monthlyData.get(monthKey)!;
-          month.visits += item.visits;
-          month.dates.push(item.date);
+          const existing = monthlyData.get(monthKey)!;
+          existing.visits += item.visits;
+          existing.count += 1;
         });
 
-        return Array.from(monthlyData.entries()).map(([monthKey, month]) => {
-          const [year, monthNum] = monthKey.split('-');
-          const date = new Date(parseInt(year), parseInt(monthNum) - 1, 1);
-          
-          return {
-            date: date.toLocaleDateString('en-US', { 
-              year: 'numeric',
-              month: 'short'
-            }),
-            visits: month.visits,
-            fullDate: monthKey,
-            period: date.toLocaleDateString('en-US', { year: 'numeric', month: 'long' }),
-          };
-        });
+        return Array.from(monthlyData.entries()).map(([monthStart, { visits }]) => ({
+          date: monthStart,
+          visits,
+          period: format(parseISO(monthStart), 'MMM yyyy')
+        }));
       }
 
-      default:
+      default: // daily
         return sortedData.map(item => ({
-          date: new Date(item.date).toLocaleDateString('en-US', { 
-            month: 'short', 
-            day: 'numeric' 
-          }),
+          date: item.date,
           visits: item.visits,
-          fullDate: item.date,
-          period: item.date,
+          period: format(parseISO(item.date), 'MMM dd')
         }));
     }
   }, [data, chartView]);
 
+  const formatXAxisLabel = (dateStr: string) => {
+    const date = parseISO(dateStr);
+    switch (chartView) {
+      case 'weekly':
+        return format(date, 'MMM dd');
+      case 'monthly':
+        return format(date, 'MMM yyyy');
+      default:
+        return format(date, 'MMM dd');
+    }
+  };
+
+  const formatTooltipLabel = (dateStr: string) => {
+    const item = aggregatedData.find(d => d.date === dateStr);
+    return item?.period || dateStr;
+  };
+
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
-      const data = payload[0].payload;
       return (
-        <div className={`${themeClasses.card} p-3 shadow-lg border`}>
-          <p className={`${themeClasses.title} font-medium`}>{data.period}</p>
-          <p className={`${themeClasses.subtitle} text-sm`}>
-            Visits: <span className="font-bold text-blue-500">{payload[0].value.toLocaleString()}</span>
+        <div className={`${themeClasses.card} p-3 border border-gray-200 shadow-lg`}>
+          <p className={`font-medium ${themeClasses.title}`}>
+            {formatTooltipLabel(label)}
           </p>
-          {chartView !== 'daily' && (
-            <p className={`${themeClasses.subtitle} text-xs mt-1`}>
-              {chartView === 'weekly' ? 'Weekly total' : 'Monthly total'}
-            </p>
-          )}
+          <p className={`${themeClasses.subtitle}`}>
+            <span className="font-medium text-blue-500">Visits:</span>{' '}
+            <span className="font-bold">{payload[0].value.toLocaleString()}</span>
+          </p>
         </div>
       );
     }
     return null;
   };
 
-  const getChartTitle = () => {
-    const viewLabels = {
-      daily: 'Daily Traffic',
-      weekly: 'Weekly Traffic',
-      monthly: 'Monthly Traffic'
-    };
-    return viewLabels[chartView];
-  };
-
   if (loading) {
     return (
-      <div className={`${themeClasses.card} p-8`}>
-        <div className="flex items-center justify-center h-80">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-        </div>
+      <div className="h-96 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-500"></div>
       </div>
     );
   }
 
-  if (data.length === 0) {
+  if (!data || data.length === 0) {
     return (
-      <div className={`${themeClasses.card} p-8`}>
-        <h3 className={`text-xl font-bold ${themeClasses.title} mb-6`}>{getChartTitle()}</h3>
-        <div className={`h-80 ${themeClasses.chartPlaceholder} rounded-lg flex items-center justify-center`}>
-          <div className="text-center">
-            <p className={themeClasses.subtitle}>No traffic data available</p>
-            <p className={`${themeClasses.subtitle} text-sm mt-2`}>
-              Add some traffic entries to see the chart
-            </p>
-          </div>
-        </div>
+      <div className={`h-96 flex flex-col items-center justify-center ${themeClasses.chartPlaceholder} rounded-lg`}>
+        <div className={`text-4xl mb-4 ${themeClasses.subtitle}`}>📊</div>
+        <h3 className={`text-lg font-medium ${themeClasses.title} mb-2`}>No Data Available</h3>
+        <p className={`${themeClasses.subtitle} text-center max-w-md`}>
+          Start by adding some traffic data to see your analytics visualization here.
+        </p>
       </div>
     );
   }
+
+  const chartProps = {
+    data: aggregatedData,
+    margin: { top: 5, right: 30, left: 20, bottom: 5 }
+  };
 
   return (
-    <div className="h-80">
+    <div className="h-96">
       <ResponsiveContainer width="100%" height="100%">
         {chartType === 'line' ? (
-          <LineChart data={aggregatedData}>
+          <LineChart {...chartProps}>
             <CartesianGrid 
               strokeDasharray="3 3" 
-              stroke={isDarkMode ? '#374151' : '#e5e7eb'} 
+              stroke="#e5e7eb"
             />
             <XAxis 
               dataKey="date" 
-              stroke={isDarkMode ? '#9ca3af' : '#6b7280'}
-              fontSize={12}
-              angle={chartView === 'daily' ? 0 : -45}
-              textAnchor={chartView === 'daily' ? 'middle' : 'end'}
-              height={chartView === 'daily' ? 30 : 60}
+              tickFormatter={formatXAxisLabel}
+              stroke="#6b7280"
             />
             <YAxis 
-              stroke={isDarkMode ? '#9ca3af' : '#6b7280'}
-              fontSize={12}
+              stroke="#6b7280"
             />
             <Tooltip content={<CustomTooltip />} />
             <Line 
               type="monotone" 
               dataKey="visits" 
               stroke="#3b82f6" 
-              strokeWidth={2}
+              strokeWidth={3}
               dot={{ fill: '#3b82f6', strokeWidth: 2, r: 4 }}
               activeDot={{ r: 6, stroke: '#3b82f6', strokeWidth: 2 }}
             />
           </LineChart>
         ) : (
-          <BarChart data={aggregatedData}>
+          <BarChart {...chartProps}>
             <CartesianGrid 
               strokeDasharray="3 3" 
-              stroke={isDarkMode ? '#374151' : '#e5e7eb'} 
+              stroke="#e5e7eb"
             />
             <XAxis 
               dataKey="date" 
-              stroke={isDarkMode ? '#9ca3af' : '#6b7280'}
-              fontSize={12}
-              angle={chartView === 'daily' ? 0 : -45}
-              textAnchor={chartView === 'daily' ? 'middle' : 'end'}
-              height={chartView === 'daily' ? 30 : 60}
+              tickFormatter={formatXAxisLabel}
+              stroke="#6b7280"
             />
             <YAxis 
-              stroke={isDarkMode ? '#9ca3af' : '#6b7280'}
-              fontSize={12}
+              stroke="#6b7280"
             />
             <Tooltip content={<CustomTooltip />} />
             <Bar 
               dataKey="visits" 
-              fill="#3b82f6" 
+              fill="#3b82f6"
               radius={[4, 4, 0, 0]}
             />
           </BarChart>

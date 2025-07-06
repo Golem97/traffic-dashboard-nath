@@ -95,8 +95,8 @@ const DataTable: React.FC<DataTableProps> = ({
   const SortIcon = ({ field }: { field: SortField }) => {
     if (sortField !== field) return <ChevronUp className="w-4 h-4 opacity-30" />;
     return sortOrder === 'asc' ? 
-      <ChevronUp className="w-4 h-4 text-blue-500" /> : 
-      <ChevronDown className="w-4 h-4 text-blue-500" />;
+      <ChevronUp className="w-4 h-4 text-black" /> : 
+      <ChevronDown className="w-4 h-4 text-black" />;
   };
 
   const isFiltering = dateFrom || dateTo;
@@ -105,7 +105,7 @@ const DataTable: React.FC<DataTableProps> = ({
     return (
       <div className={`${themeClasses.card} p-8`}>
         <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black"></div>
         </div>
       </div>
     );
@@ -115,17 +115,17 @@ const DataTable: React.FC<DataTableProps> = ({
     <div className={`${themeClasses.card} p-6`}>
       <div className="flex justify-between items-center mb-6">
         <h3 className={`text-xl font-bold ${themeClasses.title}`}>Traffic Data</h3>
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center space-x-2 sm:space-x-3">
           <button
             onClick={toggleDateFilter}
-            className={`px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors ${
+            className={`px-2 sm:px-4 py-1.5 sm:py-2 rounded-lg flex items-center space-x-1 sm:space-x-2 transition-colors text-sm ${
               showDateFilter || isFiltering
-                ? 'bg-blue-500 text-white hover:bg-blue-600'
-                : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                ? 'bg-black text-white hover:bg-gray-800'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
             }`}
           >
             <Filter className="w-4 h-4" />
-            <span>Filter</span>
+            <span className="hidden sm:inline">Filter</span>
             {isFiltering && (
               <span className="bg-white/20 text-xs px-1.5 py-0.5 rounded-full">
                 {data.length}/{totalDataCount}
@@ -134,18 +134,18 @@ const DataTable: React.FC<DataTableProps> = ({
           </button>
           <button
             onClick={onAdd}
-            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
+            className="bg-black hover:bg-gray-800 text-white px-2 sm:px-4 py-1.5 sm:py-2 rounded-lg flex items-center space-x-1 sm:space-x-2 transition-colors text-sm"
           >
             <Plus className="w-4 h-4" />
-            <span>Add Entry</span>
+            <span className="hidden sm:inline">Add Entry</span>
           </button>
         </div>
       </div>
 
       {/* Collapsible Date Range Filter */}
       {showDateFilter && (
-        <div className={`mb-6 p-4 rounded-lg border ${themeClasses.card} bg-gray-50 dark:bg-gray-800/50 transition-all duration-200 ease-in-out`}>
-          <div className="flex items-center space-x-4 flex-wrap gap-2">
+        <div className={`mb-6 p-3 sm:p-4 rounded-lg border ${themeClasses.card} bg-gray-50 transition-all duration-200 ease-in-out`}>
+          <div className="flex items-center space-x-2 sm:space-x-4 flex-wrap gap-2">
             <div className="flex items-center space-x-2">
               <Calendar className={`w-4 h-4 ${themeClasses.subtitle}`} />
               <span className={`text-sm font-medium ${themeClasses.subtitle}`}>Filter by date:</span>
@@ -157,9 +157,9 @@ const DataTable: React.FC<DataTableProps> = ({
                 type="date"
                 value={dateFrom}
                 onChange={(e) => handleDateFromChange(e.target.value)}
-                className={`px-3 py-1 border rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                className={`px-2 sm:px-3 py-1 border rounded-md text-sm focus:ring-2 focus:ring-black focus:border-black ${
                   themeClasses.card
-                } border-gray-300 dark:border-gray-600`}
+                } border-gray-300`}
               />
             </div>
             
@@ -169,16 +169,16 @@ const DataTable: React.FC<DataTableProps> = ({
                 type="date"
                 value={dateTo}
                 onChange={(e) => handleDateToChange(e.target.value)}
-                className={`px-3 py-1 border rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                className={`px-2 sm:px-3 py-1 border rounded-md text-sm focus:ring-2 focus:ring-black focus:border-black ${
                   themeClasses.card
-                } border-gray-300 dark:border-gray-600`}
+                } border-gray-300`}
               />
             </div>
             
             {isFiltering && (
               <button
                 onClick={handleClearFilter}
-                className="flex items-center space-x-1 px-2 py-1 text-sm text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md transition-colors"
+                className="flex items-center space-x-1 px-2 py-1 text-sm text-black hover:text-gray-600 hover:bg-gray-100 rounded-md transition-colors"
               >
                 <X className="w-3 h-3" />
                 <span>Clear</span>
@@ -211,7 +211,7 @@ const DataTable: React.FC<DataTableProps> = ({
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-gray-200 dark:border-gray-700">
+                <tr className="border-b border-gray-200">
                   <th 
                     className={`text-left py-3 px-4 font-medium ${themeClasses.title} cursor-pointer hover:bg-white/5 transition-colors`}
                     onClick={() => handleSort('date')}
@@ -239,7 +239,7 @@ const DataTable: React.FC<DataTableProps> = ({
                 {paginatedData.map((item) => (
                   <tr 
                     key={item.id} 
-                    className="border-b border-gray-200 dark:border-gray-700 hover:bg-white/5 transition-colors"
+                    className="border-b border-gray-200 hover:bg-white/5 transition-colors"
                   >
                     <td className={`py-3 px-4 ${themeClasses.cardText}`}>
                       {formatDate(item.date)}
@@ -248,16 +248,16 @@ const DataTable: React.FC<DataTableProps> = ({
                       {item.visits.toLocaleString()}
                     </td>
                     <td className="py-3 px-4 text-right">
-                      <div className="flex justify-end space-x-2">
+                      <div className="flex justify-end space-x-1 sm:space-x-2">
                         <button
                           onClick={() => onEdit(item)}
-                          className="p-2 rounded-lg hover:bg-blue-500/20 text-blue-500 transition-colors"
+                          className="p-1.5 sm:p-2 rounded-lg hover:bg-black/10 text-black transition-colors"
                         >
                           <Edit2 className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => item.id && onDelete(item.id)}
-                          className="p-2 rounded-lg hover:bg-red-500/20 text-red-500 transition-colors"
+                          className="p-1.5 sm:p-2 rounded-lg hover:bg-black/10 text-black transition-colors"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -275,31 +275,33 @@ const DataTable: React.FC<DataTableProps> = ({
                 Showing {startIndex + 1} to {Math.min(startIndex + itemsPerPage, data.length)} of {data.length} entries
                 {isFiltering && ` (filtered from ${totalDataCount} total)`}
               </p>
-              <div className="flex space-x-2">
+              <div className="flex space-x-1 sm:space-x-2">
                 <button
                   onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                   disabled={currentPage === 1}
-                  className={`px-3 py-1 rounded ${
+                  className={`px-2 sm:px-3 py-1 rounded text-sm ${
                     currentPage === 1
                       ? 'opacity-50 cursor-not-allowed'
                       : 'hover:bg-white/10'
                   } ${themeClasses.button} transition-colors`}
                 >
-                  Previous
+                  <span className="hidden sm:inline">Previous</span>
+                  <span className="sm:hidden">Prev</span>
                 </button>
-                <span className={`px-3 py-1 ${themeClasses.cardText}`}>
+                <span className={`px-2 sm:px-3 py-1 text-sm ${themeClasses.cardText}`}>
                   {currentPage} of {totalPages}
                 </span>
                 <button
                   onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
                   disabled={currentPage === totalPages}
-                  className={`px-3 py-1 rounded ${
+                  className={`px-2 sm:px-3 py-1 rounded text-sm ${
                     currentPage === totalPages
                       ? 'opacity-50 cursor-not-allowed'
                       : 'hover:bg-white/10'
                   } ${themeClasses.button} transition-colors`}
                 >
-                  Next
+                  <span className="hidden sm:inline">Next</span>
+                  <span className="sm:hidden">Next</span>
                 </button>
               </div>
             </div>

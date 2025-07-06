@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Eye, EyeOff, Mail, Lock, User, ArrowRight, Chrome, Sun, Moon } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, User, ArrowRight, Chrome, BarChart3 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { useTheme } from '../hooks/useTheme';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 
 interface LoginForm {
   email: string;
@@ -36,13 +36,16 @@ const AuthPage: React.FC = () => {
     confirmPassword: ''
   });
 
-  const { login, register, loginWithGoogle, isAuthenticated } = useAuth();
-  const { isDarkMode, toggleTheme, themeClasses } = useTheme();
+  const { login, register, loginWithGoogle, isAuthenticated, user } = useAuth();
+  const { themeClasses } = useTheme();
+  const navigate = useNavigate();
 
   // Redirect if already authenticated
-  if (isAuthenticated) {
-    return <Navigate to="/dashboard" replace />;
-  }
+  useEffect(() => {
+    if (user) {
+      navigate('/dashboard');
+    }
+  }, [user, navigate]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -136,20 +139,6 @@ const AuthPage: React.FC = () => {
         <div className={`absolute -top-40 -right-40 w-80 h-80 ${themeClasses.floatingBg[0]} rounded-full mix-blend-multiply filter blur-xl animate-float`}></div>
         <div className={`absolute -bottom-40 -left-40 w-80 h-80 ${themeClasses.floatingBg[1]} rounded-full mix-blend-multiply filter blur-xl animate-float`} style={{ animationDelay: '2s' }}></div>
         <div className={`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 ${themeClasses.floatingBg[2]} rounded-full mix-blend-multiply filter blur-xl animate-float`} style={{ animationDelay: '4s' }}></div>
-      </div>
-
-      {/* Theme Toggle */}
-      <div className="absolute top-6 right-6 z-20">
-        <button
-          onClick={toggleTheme}
-          className={`p-3 rounded-full ${themeClasses.socialButton} transition-all duration-200`}
-        >
-          {isDarkMode ? (
-            <Sun className="w-5 h-5" />
-          ) : (
-            <Moon className="w-5 h-5" />
-          )}
-        </button>
       </div>
 
       <motion.div
